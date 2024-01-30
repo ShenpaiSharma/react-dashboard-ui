@@ -36,3 +36,92 @@
     transform: rotate(360deg);
   }
 }
+
+.ag-cell.revenue-cell {
+  background-color: #c7d7bf;
+}
+
+.ag-cell.green-cell {
+  background-color: pink;
+}
+
+/* .ag-cell.red-cell {
+  background-color: red;
+} */
+
+/* .ag-cell.orange-cell {
+  background-color: orange;
+} */
+
+.ag-cell.pink-cell {
+  background-color: #fefcda;
+}
+
+.font-size-14 .ag-cell {
+  font-size: 1px;
+}
+
+.ag-ltr .ag-cell {
+  font-size: 10px;
+  overflow: unset !important;
+  white-space: unset !important;
+  word-wrap: unset !important;
+}
+
+.ag-header-cell-sortable .ag-header-cell-label {
+  font-size: 10px;
+  float: right;
+  overflow: unset !important;
+  white-space: unset !important;
+  word-wrap: unset !important;
+}
+
+.ag-cell.ag-cell-last-left-pinned:not(.ag-cell-range-right):not(.ag-cell-range-single-cell) {
+  font-weight: bold;
+}
+
+.expand-link-container {
+  /* position: absolute; */
+  /* top: 44px; */
+  /* margin-left: 47%; */
+  float: right;
+}
+
+.download-link-container {
+  position: absolute;
+  top: 58px;
+  right: 562px;
+}
+
+.download-link {
+  color: black;
+  cursor: pointer;
+}
+
+.download-link:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.expand-link {
+  /* color: black; */
+  cursor: pointer;
+}
+
+.expand-link:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.microsoft-auth-button {
+  background-color: #0078D7;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.microsoft-auth-button:hover {
+  background-color: #005A9E;
+}

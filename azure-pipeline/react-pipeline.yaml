@@ -1,0 +1,62 @@
+parameters:
+- name: deployment_env
+  displayName: Deployment Environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - prod
+
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  clean: true
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |      
+      find ./src/ -type f -name "*.js" -exec sed -i "s#http://localhost:8080/#/#g" {} \;
+      git diff
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'ContainerRegAnIAKSNonProd'
+    repository: 'tsui'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      ${{ parameters.deployment_env }}
+    #arguments: '--build-arg REACT_APP_KEY="$(REACT_APP_KEY)"'
+    addPipelineData: false
+    addBaseImageData: false
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'ContainerRegAnIAKSNonProd'
+    repository: 'tsui'
+    command: 'push'
+    tags: |
+      ${{ parameters.deployment_env }}
+    addPipelineData: false
+    addBaseImageData: false
+
+- task: Bash@3
+  env:
+    deployment_env: ${{ parameters.deployment_env }}
+  displayName: az and aks login
+  inputs:
+    targetType: 'inline'
+    script: |
+      az login --service-principal -u $(SP-ID) -p $(SP-PASSWORD) --tenant $(SP-TENANT)
+      sudo az aks install-cli
+      az aks get-credentials --resource-group diageo-analytics-nonprod-rg-advanced-analytics-team --name aks-advanceanalalytics
+      kubelogin convert-kubeconfig -l azurecli
+      kubectl delete deployment reactui -n ${deployment_env}
+      sleep 10
+      sed -i "s#image_tag#${deployment_env}#g" react_deployment.yaml
+      kubectl apply -f react_deployment.yaml -n ${deployment_env}
+      kubectl get pods

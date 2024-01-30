@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reactui
+  labels:
+    app: reactui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reactui
+  template:
+    metadata:
+      labels:
+        app: reactui
+    spec:
+      containers:
+      - image: containerreganiaksnonprod.azurecr.io/tsui:image_tag
+        env:
+          - name: AZURE_STORAGE_CONNECTION_STRING
+            valueFrom:
+              secretKeyRef:
+                name: blob-secret
+                key: AZURE_STORAGE_CONNECTION_STRING
+                optional: false
+          - name: AZURE_STORAGE_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: blob-secret
+                key: AZURE_STORAGE_ACCESS_KEY
+                optional: false
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: 1
+          limits:
+            memory: 4Gi
+            cpu: 1
+        imagePullPolicy: Always
+        name: ubuntu
+      imagePullSecrets:
+      - name: containerreganiaksnonprod
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-service
+spec:
+  selector:
+    app: reactui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: reactui-ingress
+  namespace: prod
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/use-private-ip: "true"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - secretName: tls-mleng-nam
+  rules:
+  - host: "mleng-nam.diageo.net"
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: react-service
+            port:
+              number: 80
+        pathType: ImplementationSpecific
