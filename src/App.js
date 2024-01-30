@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import Dashboard from './components/Dashboard';
-import DashboardV2 from './components/DashboardV2';
+// import Dashboard from './components/Dashboard';
+// import DashboardV2 from './components/DashboardV2';
 // import Dashboardv2 from './components/Pages/DashboardV2';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
