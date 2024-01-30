@@ -33,12 +33,12 @@ function Signin({ onRouteChange, loadUser }) {
       formData.append('password',signPassword);
       // Add more form parameters as needed
   
-      // const response = await axios.post('http://localhost:8080/api/v1/user/', formData.toString(), {
+      // const response = await axios.post('http://localhost:5000/user/', formData.toString(), {
       //   headers: {
       //     'Content-Type': 'application/x-www-form-urlencoded',
       //   },
       // });
-  
+      // console.log('response', response)
       // Handle the response
       onRouteChange('home');
       navigate('/home');
@@ -58,6 +58,7 @@ function Signin({ onRouteChange, loadUser }) {
       <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
         <main className="pa4 black-80">
           <div className="measure">
+            <h1>NFRR Checklist Automation</h1>
             <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
               <legend className="f1 fw6 ph0 mh0">Sign In</legend>
               <div className="mt3">

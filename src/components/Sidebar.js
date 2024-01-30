@@ -34,11 +34,11 @@ class Sidebar extends Component {
             name: "Dashboard",
             icon: <BsGraphUpArrow />
         },
-        // {
-        //     path: "/delta",
-        //     name: "Version2",
-        //     icon: <FaRegChartBar />
-        // }
+        {
+            path: "/delta",
+            name: "Version2",
+            icon: <FaRegChartBar />
+        }
     ];
 
     render() {

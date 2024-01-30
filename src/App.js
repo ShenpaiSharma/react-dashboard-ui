@@ -3,6 +3,7 @@ import './App.css';
 // import Dashboard from './components/Dashboard';
 // import DashboardV2 from './components/DashboardV2';
 // import Dashboardv2 from './components/Pages/DashboardV2';
+import ValidationApp from './components/ValidationApp';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Signin from './components/Signin/Signin'
@@ -75,7 +76,7 @@ function App() {
             <Route
               path="/home"
               // element={<DashboardV2 brands={brandsv2} brand={brandsv2['brands'][0]} baseApiURL="http://localhost:4000/api/v2" />}
-              element={<h2>Hello World</h2>}
+              element={<ValidationApp />}
             />
             {/* <Route
               path="/delta"
