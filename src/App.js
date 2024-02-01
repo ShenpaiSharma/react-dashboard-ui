@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 // import Dashboard from './components/Dashboard';
-// import DashboardV2 from './components/DashboardV2';
+import DashboardV2 from './components/DashboardV2';
 // import Dashboardv2 from './components/Pages/DashboardV2';
 import ValidationApp from './components/ValidationApp';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -78,12 +78,12 @@ function App() {
               // element={<DashboardV2 brands={brandsv2} brand={brandsv2['brands'][0]} baseApiURL="http://localhost:4000/api/v2" />}
               element={<ValidationApp />}
             />
-            {/* <Route
+            <Route
               path="/delta"
               // element={<Dashboard brands={brands} brand={brands['brands'][0]} baseApiURL="http://localhost:8080/api/v1" />}
-              element={<DashboardV2 brands={brandsv2} brand={brandsv2['brands'][0]} baseApiURL="http://localhost:4000/api/v2" />}
+              element={<DashboardV2 />}
 
-            /> */}
+            />
           </Routes>
         </Sidebar>
       ) : route === 'signout' ? (
