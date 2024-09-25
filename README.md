@@ -1,70 +1,169 @@
-# Getting Started with Create React App
+# OAR Forecast
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Bisht, Manish**  
+**Manager ML**
 
-## Available Scripts
+## Project Overview  
+The project involves creating an enterprise-grade forecasting product that can forecast product sales volumes across different hierarchical levels, such as brand, brand-state, and other relevant keys. The deployment process has been streamlined to a one-click operation, consisting of Data Engineering & ML pipelines. Data updates are facilitated through a manual process wherein users upload new data to a specified blob folder. The user can then run the Ingestion pipeline for extraction, transformation, and loading (ETL) data operations. After the ETL pipeline, the user should trigger the ML pipeline which runs data preprocessing, hyperparameter tuning, model training & best model selection. After best model selection, prediction results are saved to a blob which is then consumed by UI.
 
-In the project directory, you can run:
+## Table of Contents:
+1. Architecture Diagram.
+2. Tech Stack.
+3. Environment Details.
+4. Developer Flow.
+5. Backend.
+6. Frontend.
+7. Code Structure.
+8. CI/CD.
+9. Application Performance.
+10. Validation Dashboards.
+11. Future Improvements.
+12. Reference Links.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Architecture Diagram:
+![image](https://github.com/user-attachments/assets/a1261146-df69-44a4-9c49-696d67596c5d)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack:
+The chosen technology stack has been meticulously curated with a strong emphasis on ensuring code quality that aligns with key principles: reproducibility, extensibility, and scalability. The architecture is designed to facilitate a seamless one-click deployment, emphasizing efficiency and ease of use.
 
-### `npm run build`
+| **Feature**               | **Tool/Technology**          |
+|---------------------------|------------------------------|
+| **Compute**                | Databricks                   |
+| **Code Packaging**         | Databricks Bundles           |
+| **Workflows/DAG**          | Databricks Workflows         |
+| **CI/CD & Code Management**| Azure DevOps CI/CD & Azure Repos |
+| **Coding Language**        | Python, React                |
+| **Scaling Jobs**           | Joblibspark                  |
+| **Hyperparameter Tuning**  | Optuna                       |
+| **Storage**                | Blob Storage                 |
+| **Database**               | MongoDB                      |
+| **User Interface**         | React                        |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Environment Details:
+- **Machine Type:** Worker: Standard_D64s_v3
+- **Max Number of Workers:** 15
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Developer Flow:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Backend  
+**Workflow/ DAG:**
+![image](https://github.com/user-attachments/assets/50ae26ae-f758-4370-8c31-7b5eae453f15)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Code Flow:
+![image](https://github.com/user-attachments/assets/97974611-35fe-4459-9bd8-437614e0965f)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+**Data Ingestion:**
+- Databricks job is scheduled to run daily, and 3 datasets with a combination of view & ledger are placed in the blob path.
+- Two tasks are defined to run either as Full or Incremental load ingestion.
+- Job level parameters to govern the overall pipeline run.
+- Jinja template to parameterize the query and render it dynamically at runtime.
+- Pre-defined parameters to differentiate between 'debug' and 'release' runs:
+  - `debug` - `is_release=False` (Default)
+  - `release` - `is_release=True`
+- Skip the entire run using False value in case ingestion is not required:
+  - `full_load=False`
+  - `incremental_load=False` (Default)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### ML Pipeline:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Preprocessing:**
+- Data cleaning and outlier treatment (zero removal, state name correction, missing date augmentation).
+- Data aggregation (date level).
+- Modeling data preparation (hierarchical data aggregation).
 
-### Code Splitting
+**Modeling:**
+- Train-Val data creation (depending on time series length).
+- Hyperparameter tuning (Optuna).
+- Model training (Darts library).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Modeling Algorithms:**
+- Statistical models: Sarima, Prophet, Xgboost, Randomforest, FFT, FourTheta, TBATS, KalmanForecaster, Croston.
+- DL Models: NHiTSModel, TiDEModel.
 
-### Analyzing the Bundle Size
+**Prediction:**
+- Volume forecast.
+- KPI calculation (RMSE, MAPE, sMAPE, MdAPE).
+- UI data preparation.
+- Metric calculation.
+- Upload UI data.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## Code Directory Structure:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+azure-pipelines/
+├── prod/            # Yaml files to run CI/CD
+src/                 # Main source code
+resources/           # YAML files to create Databricks workflows
+run.py               # Routes requests to respective workflows
+config.yaml          # All variables used in code defined here
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Validation Dashboards
 
-### Deployment
+### Data Flow to Update the Accuracy Tracker Dashboard:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1. An Excel file is uploaded to a storage account.
+2. The workflow is initiated.
+3. The Excel file is merged with the `agg_combination` and ledger file.
+4. The accuracy tracker dashboard is refreshed.
+5. Databricks triggers Data Factory.
+6. Data Factory integrates with a Logic App.
+7. The Logic App retrieves the updated dashboard Excel file from the storage account.
+8. The refreshed file is stored in a SharePoint folder.
+9. An email containing a link to the file location is generated as the output.
 
-### `npm run build` fails to minify
+![image](https://github.com/user-attachments/assets/ee3e99d3-62e2-4529-b88d-247043d1cb4c)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+---
+
+## Frontend
+
+We are using **ReactJS** for our frontend, **FastAPI** as the backend, and **MongoDB** for storing the data.
+
+![image](https://github.com/user-attachments/assets/faba0fe4-4a58-4613-a995-5890ef9b14ae)
+
+
+- We create JSON files from the prediction generated through the pipeline and store them on Blob.
+- Then, we use the **Azure Data Factory Pipeline** to copy the JSON files from Blob to MongoDB.
+- The frontend and backend application is hosted on Kubernetes, while MongoDB is deployed using **Azure Cosmos DB**.
+
+---
+
+## KPIs
+
+- Brand
+- Sub-state
+- Brand Variant
+- Size
+- Export CSV
+- Download All
+- Ag Grid Table
+- Collapse/Expand Table
+- Ag Chart
+- **Forecast Tab**:
+  - 3 Month Accuracy
+  - Model Accuracy
+  - Best Model
+- **Model Tab**:
+  - Top 2 model details
+
+---
+
+### Features:
+- Admin login page.
+- Dynamic results on table and charts based on the left panel KPI selection.
+  ![image](https://github.com/user-attachments/assets/95f67c35-d8a8-4853-8287-499e9ebbd304)
+
